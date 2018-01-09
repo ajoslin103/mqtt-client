@@ -18,6 +18,7 @@
 //  logger via params to remove requirement for aurelia
 //  test for window before doing localhostReplacement
 //  get rid of ES6 features
+// send topic along with payload on mcb
 
 // sample usage -- only connect once (from main)
 // import mqttClient from 'mqtt-client';
@@ -157,7 +158,7 @@ class MQTTClient {
         return function (topic, payloadBuff) {
             that.subscriptions.forEach(function (sub) {
                 if (sub.regEx.test(topic)) {
-                    sub.cb(payloadBuff);
+                    sub.cb(payloadBuff, topic);
                 }
             });
         };
