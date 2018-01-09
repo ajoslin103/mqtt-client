@@ -40,10 +40,14 @@ class MQTTClient {
         } catch (ignored) { }
     }
 
-    connect(appName, logger, brokerAddr) {
-        this.mqttBroker = brokerAddr || this.mqttBroker;
-        this.logger = (logger) ? logger : console;
-        var will = { topic: appName + '/died' };
+    // appName, [Console|brokerAddr], [Console|brokerAddr]
+    connect(appName, opt1, opt2) {
+        let allegedBroker = (typeof opt1 === 'string') ? opt1 : opt2
+        let allegedLogger = (typeof opt1 !== 'string') ? opt1 : opt2
+        allegedBroker = (allegedBroker !== 'localhost') ? allegedBroker : 'mqtt://localhost:1883';
+        this.logger = (allegedLogger) ? allegedLogger : console;
+        this.mqttBroker = allegedBroker || this.mqttBroker;
+        let will = { topic: appName + '/died' };
         will.payload = JSON.stringify(will);
         this.logger.info('mqttClient.id', this.id);
         this.logger.debug('connect with broker as: ' + appName + ' at: ' + this.mqttBroker);

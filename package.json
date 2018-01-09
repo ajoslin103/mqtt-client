@@ -1,6 +1,6 @@
 {
   "name": "mqtt-client",
-  "version": "1.2.24",
+  "version": "1.2.30",
   "description": "Utility routines for making mqtt.  Private request-reply support via promises. Message routing of given topics to given callbacks. Standardized LWT structure.",
   "main": "index.js",
   "scripts": {
