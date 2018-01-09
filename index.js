@@ -19,6 +19,10 @@
 //  test for window before doing localhostReplacement
 //  get rid of ES6 features
 
+// sample usage -- only connect once (from main)
+// import mqttClient from 'mqtt-client';
+// mqttClient.connect(environment.mqttAppName, Console);
+
 var shortid = require('shortid');
 var mqtt = require('mqtt');
 
