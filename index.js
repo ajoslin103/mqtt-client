@@ -50,8 +50,7 @@ class MQTTClient {
         this.mqttBroker = allegedBroker || this.mqttBroker;
         let will = { topic: appName + '/died' };
         will.payload = JSON.stringify(will);
-        this.logger.info('mqttClient.id', this.id);
-        this.logger.debug('connect with broker as: ' + appName + ' at: ' + this.mqttBroker);
+        this.logger.info('mqttClient: ', this.id, ' connecting with broker: ' + this.mqttBroker + ' as: ' + appName);
         this.mqttClient = mqtt.connect(this.mqttBroker, { will: will });
         this.mqttClient.once('connect', this.onConnected());
     };
@@ -62,7 +61,6 @@ class MQTTClient {
 
     disconnect(endHardFast = false) {
         try {
-            this.logger.debug('disconnect from broker at: ' + this.mqttBroker);
             this.mqttClient.end(endHardFast);
         } catch (err) {
             this.logger.error('disconnect threw:', err);
