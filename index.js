@@ -177,4 +177,6 @@ class MQTTClient {
     }
 }
 
-module.exports = new MQTTClient();
+module.exports = {
+    mqttClient: new MQTTClient()
+}
