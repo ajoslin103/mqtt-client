@@ -21,7 +21,7 @@
 // send topic along with payload on mcb
 
 // sample usage -- only connect once (from main)
-// import mqttClient from 'mqtt-client';
+// import { mqttClient } from 'mqtt-client';
 // mqttClient.connect(environment.mqttAppName, Console);
 
 var shortid = require('shortid');
@@ -52,7 +52,7 @@ class MQTTClient {
         will.payload = JSON.stringify(will);
         this.logger.info('mqttClient: ', this.id, ' connecting with broker: ' + this.mqttBroker + ' as: ' + appName);
         this.mqttClient = mqtt.connect(this.mqttBroker, { will: will });
-        this.mqttClient.once('connect', this.onConnected());
+        this.mqttClient.on('connect', this.onConnected());
     };
 
     isReady() {
@@ -67,27 +67,31 @@ class MQTTClient {
         }
     };
 
-    publish(topic, message, options, pcb) {
+    publish(topic, message = '', options = {}, pcb = this.noop) {
         try {
-            this.mqttClient.publish(topic, message, options, (pcb) ? pcb : this.noop);
+            if (!topic) { throw new Error('topic not supplied'); }
+            this.mqttClient.publish(topic, message, options, pcb);
         } catch (err) {
             this.logger.error('publish threw:', err);
         }
     };
 
-    subscribe(topic, options, mcb, scb) {
+    subscribe(topic, options, mcb, scb = this.noop) {
         try {
-            if (!mcb) { throw new Error('messageCallback not supplied'); }
+            if (!topic) { throw new Error('topic not supplied'); }
             if (!options) { throw new Error('topicOptions not supplied'); }
-            this.mqttClient.subscribe(topic, options, this.onSubscribed(mcb, (scb) ? scb : this.noop));
+            if (!mcb) { throw new Error('messageCallback not supplied'); }
+            if (!this.mqttClient) { throw new Error('this.mqttClient not defined'); }
+            this.mqttClient.subscribe(topic, options, this.onSubscribed(mcb, scb));
         } catch (err) {
             this.logger.error('subscribe threw:', err);
         }
     };
 
-    unsubscribe(topic, ucb) {
+    unsubscribe(topic, ucb = this.noop) {
         try {
-            this.mqttClient.unsubscribe(topic, this.onUnsubscribed((ucb) ? ucb : this.noop));
+            if (!topic) { throw new Error('topic not supplied'); }
+            this.mqttClient.unsubscribe(topic, this.onUnsubscribed(ucb));
         } catch (err) {
             this.logger.error('unsubscribe threw:', err);
         }
@@ -98,6 +102,8 @@ class MQTTClient {
     // reply is _always_ the topicRequest with /reply suffix
     requestReply(topicRequest, requestPayload, options = { qos: 2 }) {
         try {
+            var that = this;
+            if (!topicRequest) { throw new Error('topicRequest not supplied'); }
             const uniqueRequest = topicRequest + shortid.generate();
             const topicReply = uniqueRequest + '/reply';
             return new Promise(function (resolve, reject) {
@@ -105,8 +111,8 @@ class MQTTClient {
                 var overtime = setTimeout(function () {
                     resolve(JSON.stringify({ error: 'timeout on request-reply for topic: ' + uniqueRequest }))
                 }, options.timeLimit);
-                this.subscribe(topicReply, { qos: options.qos }, function (replyPayload) {
-                    this.unsubscribe(topicReply, function (err) {
+                that.subscribe(topicReply, { qos: options.qos }, function (replyPayload) {
+                    that.unsubscribe(topicReply, function (err) {
                         if (err) {
                             resolve(JSON.stringify({ msg: 'unsubscribe error, ' + err, payload: replyPayload }));
                         }
@@ -117,7 +123,7 @@ class MQTTClient {
                     if (err) {
                         reject(JSON.stringify({ msg: 'subscribe error, ' + err, payload: requestPayload }));
                     } else {
-                        this.publish(uniqueRequest, requestPayload, { qos: options.qos });
+                        that.publish(uniqueRequest, requestPayload, { qos: options.qos });
                     }
                 });
             });
