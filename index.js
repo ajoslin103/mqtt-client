@@ -109,19 +109,19 @@ class MQTTClient {
             return new Promise(function (resolve, reject) {
                 options.timeLimit = (options.timeLimit || 25000);
                 var overtime = setTimeout(function () {
-                    resolve(JSON.stringify({ error: 'timeout on request-reply for topic: ' + uniqueRequest }))
+                    reject(new Error(JSON.stringify({ error: 'timeout on request-reply for topic: ' + uniqueRequest })))
                 }, options.timeLimit);
                 that.subscribe(topicReply, { qos: options.qos }, function (replyPayload) {
                     that.unsubscribe(topicReply, function (err) {
                         if (err) {
-                            resolve(JSON.stringify({ msg: 'unsubscribe error, ' + err, payload: replyPayload }));
+                            reject(new Error(JSON.stringify({ msg: 'unsubscribe error, ' + err, payload: replyPayload })));
                         }
                     });
                     clearTimeout(overtime);
                     resolve(replyPayload);
                 }, function (err) {
                     if (err) {
-                        reject(JSON.stringify({ msg: 'subscribe error, ' + err, payload: requestPayload }));
+                        reject(new Error(JSON.stringify({ msg: 'subscribe error, ' + err, payload: requestPayload })));
                     } else {
                         that.publish(uniqueRequest, requestPayload, { qos: options.qos });
                     }
