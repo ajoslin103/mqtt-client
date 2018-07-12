@@ -24,8 +24,8 @@
 // import { mqttClient } from 'mqtt-client';
 // mqttClient.connect(environment.mqttAppName, Console);
 
-var shortid = require('shortid');
-var mqtt = require('mqtt');
+let shortid = require('shortid');
+let mqtt = require('mqtt');
 
 class MQTTClient {
 
@@ -102,13 +102,13 @@ class MQTTClient {
     // reply is _always_ the topicRequest with /reply suffix
     requestReply(topicRequest, requestPayload, options = { qos: 2 }) {
         try {
-            var that = this;
+            let that = this;
             if (!topicRequest) { throw new Error('topicRequest not supplied'); }
-            const uniqueRequest = topicRequest + shortid.generate();
-            const topicReply = uniqueRequest + '/reply';
+            const uniqueRequest = topicRequest + ((topicRequest.slice(-1) === '/') ? '' : '/') + shortid.generate();
+            const topicReply = uniqueRequest + ((uniqueRequest.slice(-1) === '/') ? '' : '/') + 'reply';
             return new Promise(function (resolve, reject) {
                 options.timeLimit = (options.timeLimit || 25000);
-                var overtime = setTimeout(function () {
+                let overtime = setTimeout(function () {
                     reject(new Error(JSON.stringify({ error: 'timeout on request-reply for topic: ' + uniqueRequest })))
                 }, options.timeLimit);
                 that.subscribe(topicReply, { qos: options.qos }, function (replyPayload) {
@@ -142,7 +142,7 @@ class MQTTClient {
         const that = this;
         return function (error, granted) {
             granted.forEach(function (sub) {
-                var subRegStr = sub.topic.replace(that.singleLevelWildcard, '[^/]*').replace(that.multipleLevelWildcard, '.*');
+                let subRegStr = sub.topic.replace(that.singleLevelWildcard, '[^/]*').replace(that.multipleLevelWildcard, '.*');
                 that.subscriptions.push({ regEx: new RegExp(subRegStr), cb: mcb });
             });
             scb();
@@ -150,8 +150,8 @@ class MQTTClient {
     };
 
     onConnected() {
-        var mqttClient = this.mqttClient;
-        var onMessageCB = this.onMessage();
+        let mqttClient = this.mqttClient;
+        let onMessageCB = this.onMessage();
         return function (packet) {
             mqttClient.on('message', onMessageCB);
         };
