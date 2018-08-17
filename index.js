@@ -48,7 +48,7 @@ class MQTTClient {
         allegedBroker = (allegedBroker !== 'localhost') ? allegedBroker : 'mqtt://localhost:1883';
         this.logger = (allegedLogger) ? allegedLogger : console;
         this.mqttBroker = allegedBroker || this.mqttBroker;
-        let will = { topic: appName + '/died' };
+        let will = { topic: 'died/' + appName };
         will.payload = JSON.stringify(will);
         this.logger.info('mqttClient: ', this.id, ' connecting with broker: ' + this.mqttBroker + ' as: ' + appName);
         this.mqttClient = mqtt.connect(this.mqttBroker, { will: will });
