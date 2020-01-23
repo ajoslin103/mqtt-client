@@ -43,6 +43,7 @@ class MQTTClient {
 
     // appName, [Console|brokerAddr], [Console|brokerAddr]
     connect(appName, opt1, opt2) {
+        appName = appName || this.id;
         let allegedBroker = (typeof opt1 === 'string') ? opt1 : opt2
         let allegedLogger = (typeof opt1 !== 'string') ? opt1 : opt2
         allegedBroker = (allegedBroker !== 'localhost') ? allegedBroker : 'mqtt://localhost:1883';

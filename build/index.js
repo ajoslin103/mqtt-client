@@ -53,6 +53,7 @@ var MQTTClient = function () {
     _createClass(MQTTClient, [{
         key: 'connect',
         value: function connect(appName, opt1, opt2) {
+            appName = appName || this.id;
             var allegedBroker = typeof opt1 === 'string' ? opt1 : opt2;
             var allegedLogger = typeof opt1 !== 'string' ? opt1 : opt2;
             allegedBroker = allegedBroker !== 'localhost' ? allegedBroker : 'mqtt://localhost:1883';
