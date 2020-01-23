@@ -20,9 +20,13 @@
 //  get rid of ES6 features
 // send topic along with payload on mcb
 
-// sample usage -- only connect once (from main)
+// sample usage -- connect from ES6 code
 // import { mqttClient } from 'mqtt-client';
-// mqttClient.connect(environment.mqttAppName, Console);
+// mqttClient.connect('myStaticAppName');
+
+// sample usage -- connect from ES5 code
+// var mqttClient = require('mqtt-client').mqttClient;
+// mqttClient.connect('myStaticAppName');
 
 let shortid = require('shortid');
 let mqtt = require('mqtt');
@@ -41,7 +45,7 @@ class MQTTClient {
         } catch (ignored) { }
     }
 
-    // appName, [Console|brokerAddr], [Console|brokerAddr]
+    // appName, [Logger|brokerAddr], [Logger|brokerAddr]
     connect(appName, opt1, opt2) {
         appName = appName || this.id;
         let allegedBroker = (typeof opt1 === 'string') ? opt1 : opt2

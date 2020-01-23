@@ -25,9 +25,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 //  get rid of ES6 features
 // send topic along with payload on mcb
 
-// sample usage -- only connect once (from main)
+// sample usage -- connect from ES6 code
 // import { mqttClient } from 'mqtt-client';
-// mqttClient.connect(environment.mqttAppName, Console);
+// mqttClient.connect('myStaticAppName');
+
+// sample usage -- connect from ES5 code
+// var mqttClient = require('mqtt-client').mqttClient;
+// mqttClient.connect('myStaticAppName');
 
 var shortid = require('shortid');
 var mqtt = require('mqtt');
@@ -47,7 +51,7 @@ var MQTTClient = function () {
         } catch (ignored) {}
     }
 
-    // appName, [Console|brokerAddr], [Console|brokerAddr]
+    // appName, [Logger|brokerAddr], [Logger|brokerAddr]
 
 
     _createClass(MQTTClient, [{
