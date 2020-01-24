@@ -25,6 +25,7 @@ ajoslin, january 2018
 
 ajoslin, january 2020
     default the appName to the internal guid when not supplied
+    overload constructor with single object option
 
 
 sample usage -- connect from ES6 code
