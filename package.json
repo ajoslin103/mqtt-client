@@ -7,7 +7,7 @@
     "build": "babel index.js -d build"
   },
   "dependencies": {
-    "mqtt": "^2.15.0",
+    "mqtt": "^2.18.8",
     "nanoid": "^2.1.10",
     "shortid": "^2.2.15"
   },

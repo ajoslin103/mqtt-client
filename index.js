@@ -50,19 +50,24 @@ class MQTTClient {
       this.options.appName = param1;
       this.logger = (typeof opt1 !== 'string') ? opt1 : opt2
       let allegedBroker = (typeof opt1 === 'string') ? opt1 : opt2
-      if (allegedBroker === 'localhost') {
-        allegedBroker = (window) ? this.localhostReplacement('ws://localhost:8000', window.location) : 'mqtt://localhost:1883';
+      allegedBroker = allegedBroker || 'localhost';
+      if (/localhost/i.test(allegedBroker)) {
+        allegedBroker = (window) ? 'localhost:8000' : 'localhost:1883';
+        [this.options.host, this.options.port] = allegedBroker.split(':');
+        // allegedBroker = (window) ? this.localhostReplacement('ws://localhost:8000', window.location) : 'mqtt://localhost:1883';
+        // this.options.logger.info('allegedBroker after localhostReplacement:' + allegedBroker);
       }
       this.options.mqttBroker = allegedBroker;
     }
     if (typeof param1 === 'object') {
       this.options = Object.assign(this.options, param1);
+      this.options.mqttBroker = this.options.host + ':' + this.options.port;
     }
     this.options.appName = this.options.appName || this.id;
     this.options.will = { topic: 'died/' + this.options.appName };
     this.options.will.payload = JSON.stringify(this.options.will);
     this.options.logger.info('id: ', this.id, ' broker: ' + this.options.mqttBroker + ' as: ' + this.options.username || this.options.appName);
-    this.mqttClient = mqtt.connect(this.options.mqttBroker, this.options);
+    this.mqttClient = mqtt.connect(this.options);
     this.mqttClient.on('connect', this.onConnected());
   };
 
